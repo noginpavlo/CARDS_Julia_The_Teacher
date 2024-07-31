@@ -4,7 +4,6 @@ import random
 import json
 
 
-
 class Extractor:
 
     def __init__(self, word):
@@ -21,61 +20,57 @@ class Extractor:
         response = requests.get(self.url)
         if response.status_code == 200:
             self.response = response.json()
-            # read = json.dumps(self.response, indent=4, sort_keys=True)
-            # print(read)
             try:
-                title_word = self.word.upper()
-                self.example.append(self.response[0]['meanings'][0]['definitions'][0]['example'])
-                self.definition.append(self.response[0]['meanings'][0]['definitions'][0]['definition'])
-                self.json = {
-                    "Date": self.date,
-                    "key_word": title_word,
-                    "prompt": f"Definitions for '{self.word}':",
-                    "phonetics": f"Phonetics: {self.response[0]['phonetic']}",
-                    "definitions": self.definition,
-                    "example": self.example
-                }
-                return self.json
+                word = self.word.upper()
+                record_date = self.date
+                phonetics = self.response[0]['phonetic']
+                example = self.response[0]['meanings'][0]['definitions'][0]['example']
+                definition = self.response[0]['meanings'][0]['definitions'][0]['definition']
+                return record_date, word, phonetics, definition, example
             except KeyError:
-                title_word = self.word.upper()
-                self.definition.append(self.response[0]['meanings'][0]['definitions'][0]['definition'])
-                self.example.append("No example found")
-                self.json = {
-                    "key_word": title_word,
-                    "prompt": f"Definitions for '{self.word}':",
-                    "phonetics": f"Phonetics: {self.response[0]['phonetic']}",
-                    "definitions": self.definition,
-                    "example": self.example
-                }
-                return self.json
+                word = self.word.upper()
+                record_date = self.date
+                phonetics = self.response[0]['phonetic']
+                definition = self.response[0]['meanings'][0]['definitions'][0]['definition']
+                example = "No example found."
+                return record_date, word, phonetics, definition, example
         else:
             return f"Unable to find definition for '{self.word}"
 
-    def store_data(self, json_dict):
-        with open("database.json", "r") as file:
-            entry_store = json.load(file)
+    def format(self):
+        record_date = self.date
+        word = self.json["key_word"]
+        phonetics = self.response[0]['phonetic']
+        definition = self.definition
+        example = self.json["example"]
+        return record_date, word, phonetics, definition, example
 
-        entry_store.append(json_dict)
 
-        with open("database.json", "w") as file:
-            json.dump(entry_store, file, indent=4, sort_keys=False)
+    # def store_data(self, json_dict):
+    #     with open("database.json", "r") as file:
+    #         entry_store = json.load(file)
 
-    def retrieve(self):
-        with open("database.json", "r") as file:
-            data = json.load(file)
-            database_length = len(data)
-            index = random.randint(0, database_length-1)
-            word_to_learn = data[index]
-            return word_to_learn
+        # entry_store.append(json_dict)
+        #
+        # with open("database.json", "w") as file:
+        #     json.dump(entry_store, file, indent=4, sort_keys=False)
 
-    def get_back(self, json_word):
-        title_word = json_word["key_word"]
-        prompt = json_word["prompt"]
-        phonetics = json_word["phonetics"]
-        definition = json_word["definitions"]
-        example = json_word["example"]
-        final_text = f"{title_word}\n{prompt}\n{definition}\n{phonetics}\nExample: {example}"
-        print(final_text)
-
-    def get_front(self, json_word):
-        pass
+    # def retrieve(self):
+    #     with open("database.json", "r") as file:
+    #         data = json.load(file)
+    #         database_length = len(data)
+    #         index = random.randint(0, database_length-1)
+    #         word_to_learn = data[index]
+    #         return word_to_learn
+    #
+    # def get_back(self, json_word):
+    #     title_word = json_word["key_word"]
+    #     prompt = json_word["prompt"]
+    #     phonetics = json_word["phonetics"]
+    #     definition = json_word["definitions"]
+    #     example = json_word["example"]
+    #     final_text = f"{title_word}\n{prompt}\n{definition}\n{phonetics}\nExample: {example}"
+    #     print(final_text)
+    #
+    # def get_front(self, json_word):
+    #     pass
