@@ -3,7 +3,7 @@ from tkinter import *
 import random
 
 
-extractor = Extractor("word")
+extractor = Extractor()
 
 
 class Window(Tk):
@@ -28,17 +28,24 @@ class Window(Tk):
 
         self.menu_frame.pack()
 
+        self.input = StringVar()
+
     def run_learn(self):
         learn_window = Toplevel(self)
         learn_window.title("Learn with Julia")
-        learn_window.minsize(300, 400)
+        learn_window.minsize(380, 400)
 
         learn_frame = Frame(learn_window)
+        learn_frame.grid(sticky="news")
 
-        text_widget = Text(learn_frame, wrap="word", font=("Arial", 14))
-        text_widget.insert("1.0", "This is some text to display in the window. " * 10)
-        text_widget.config(state="disabled")  # Make the text widget read-only
-        text_widget.grid()
+        canvas = Canvas(learn_frame, bg="white")
+        canvas.grid(row=0, column=0, sticky="news")
+
+        text_frame = Frame(canvas, bg="white")
+        canvas.create_window((0, 0), window=text_frame, anchor="nw")
+
+        text_label = Label(text_frame, text = "Let's start wit this ofr now.", font=("Arial", 14), bg="white", wraplength=550)
+        text_label.pack()
 
         flip_button = Button(learn_frame, text="Flip", font=("Arial", 24))
         flip_button.grid(row=1, column=0, pady=5, sticky="news")
@@ -60,22 +67,42 @@ class Window(Tk):
         card_window.minsize(600, 400)
 
         create_frame = Frame(card_window)
-        create_frame.grid(sticky="news")
+        create_frame.grid(sticky="news", padx=10, pady=10)
+
+        create_frame.grid_rowconfigure(0, weight=1)
+        create_frame.grid_rowconfigure(1, weight=1)
+        create_frame.grid_rowconfigure(2, weight=1)
+        create_frame.grid_columnconfigure(0, weight=1)
+        create_frame.grid_columnconfigure(1, weight=1)
+        create_frame.grid_columnconfigure(2, weight=1)
+
+        self.input_entry = Entry(create_frame, textvariable=self.input, font=("Arial", 14))
+        self.input_entry.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
+
+        self.create_button = Button(create_frame, text="Create card", command=self.refresh_prompt, font=("Arial", 24))
+        self.create_button.grid(row=2, column=1, pady=5, padx=10, sticky="ew")
+
+        self.done_widget = Text(create_frame, state=DISABLED,  width=30, height=2, wrap='word', font=("Arial", 14))
+        self.done_widget.grid(row=1, column=1, pady=5, padx=10, sticky="ew")
 
         card_window.grid_rowconfigure(0, weight=1)
         card_window.grid_columnconfigure(0, weight=1)
 
-        create_frame.grid_rowconfigure(0, weight=1)
-        create_frame.columnconfigure(0, weight=1)
-        create_frame.columnconfigure(1, weight=1)
-        create_frame.columnconfigure(2, weight=1)
+    def refresh_prompt(self):
+        input_word = self.input.get()
+        word = extractor.get_definition(input_word)
+        if word == "Unable to find":
+            self.done_widget.config(state=NORMAL)
+            self.done_widget.delete("1.0", END)
+            self.done_widget.insert(END,  f"Unable to find '{input_word}'")
+            self.done_widget.config(state=DISABLED)
+        else:
+            extractor.save_word(word)
 
-        input_var = StringVar()
-        input_entry = Entry(create_frame, textvariable=input_var, font=("Arial", 14))
-        input_entry.grid(row=0, column=1, pady=5, sticky="ew")
-
-        create_button = Button(create_frame, text="Create card", command=extractor.get_definition, font=("Arial", 24))
-        create_button.grid(row=1, column=1, pady=5, sticky="ew")
+            self.done_widget.config(state=NORMAL)
+            self.done_widget.delete("1.0", END)
+            self.done_widget.insert(END, f"'{input_word}' added successfully")
+            self.done_widget.config(state=DISABLED)
 
 
     def run_stats(self):

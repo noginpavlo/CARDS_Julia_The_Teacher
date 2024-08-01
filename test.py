@@ -1,7 +1,10 @@
-dict1 = {
-    "cat":"cute",
-    "dog":"funny",
-    "fox":"smart"
-         }
-variable = dict1["cat"]
-print(variable)
+import sqlite3
+
+connect = sqlite3.connect("database.db")
+cursor = connect.cursor()
+cursor.execute('''
+    DELETE FROM clean_vocabulary
+''')
+connect.commit()
+cursor.execute("VACUUM")
+connect.commit()
