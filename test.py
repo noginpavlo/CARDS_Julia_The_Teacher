@@ -3,8 +3,15 @@ import sqlite3
 connect = sqlite3.connect("database.db")
 cursor = connect.cursor()
 cursor.execute('''
-    DELETE FROM clean_vocabulary
+    CREATE TABLE IF NOT EXISTS vocabulary
+    (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    date TEXT,
+    word TEXT,
+    phonetics TEXT,
+    definition TEXT,
+    example TEXT
+    )
 ''')
 connect.commit()
-cursor.execute("VACUUM")
-connect.commit()
+connect.close()

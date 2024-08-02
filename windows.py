@@ -96,6 +96,11 @@ class Window(Tk):
             self.done_widget.delete("1.0", END)
             self.done_widget.insert(END,  f"Unable to find '{input_word}'")
             self.done_widget.config(state=DISABLED)
+        elif word == "Word already in dictionary":
+            self.done_widget.config(state=NORMAL)
+            self.done_widget.delete("1.0", END)
+            self.done_widget.insert(END, f"Word '{input_word}' already in your dictionary")
+            self.done_widget.config(state=DISABLED)
         else:
             extractor.save_word(word)
 
