@@ -94,40 +94,40 @@ class Extractor:
         connect.commit()
         connect.close()
 
-    def clean_data(self):
-        connect = sqlite3.connect("database.db")
-        cursor = connect.cursor()
-        cursor.execute('''
-            DELETE FROM clean_vocabulary
-        ''')
-        connect.commit()
-        cursor.execute("VACUUM")
-        connect.commit()
-        cursor.execute('''
-            SELECT * FROM (
-                SELECT DISTINCT word
-                FROM vocabulary
-                WHERE date <= ?
-            ) AS distinct_words
-            JOIN vocabulary ON vocabulary.word = distinct_words.word
-            WHERE vocabulary.date <= ?
-            ''', (date.today(), date.today()))
-        clean_data = cursor.fetchall()
-        connect.commit()
-        for row in clean_data:
-            cursor.execute('''
-                INSERT INTO clean_vocabulary (date, word, phonetics, definition, example)
-                VALUES (?, ?, ?, ?, ?)
-                    ''', row[2:])
-        connect.commit()
-        connect.close()
+    # def clean_data(self):
+    #     connect = sqlite3.connect("database.db")
+    #     cursor = connect.cursor()
+    #     # cursor.execute('''
+    #     #     DELETE FROM clean_vocabulary
+    #     # ''')
+    #     # connect.commit()
+    #     # cursor.execute("VACUUM")
+    #     # connect.commit()
+    #     cursor.execute('''
+    #         SELECT * FROM (
+    #             SELECT DISTINCT word
+    #             FROM vocabulary
+    #             WHERE date <= ?
+    #         ) AS distinct_words
+    #         JOIN vocabulary ON vocabulary.word = distinct_words.word
+    #         WHERE vocabulary.date <= ?
+    #         ''', (date.today(), date.today()))
+    #     clean_data = cursor.fetchall()
+    #     connect.commit()
+    #     for row in clean_data:
+    #         cursor.execute('''
+    #             INSERT INTO clean_vocabulary (date, word, phonetics, definition, example)
+    #             VALUES (?, ?, ?, ?, ?)
+    #                 ''', row[2:])
+    #     connect.commit()
+    #     connect.close()
 
     def pull_random_card(self):
         connect = sqlite3.connect("database.db")
         cursor = connect.cursor()
-        self.clean_data()
+        # self.clean_data()
         cursor.execute('''
-            SELECT MAX(id) FROM clean_vocabulary
+            SELECT MAX(id) FROM vocabulary
         ''')
         result = cursor.fetchone()
         max_id = result[0]

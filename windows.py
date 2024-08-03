@@ -76,8 +76,27 @@ class Window(Tk):
         create_frame.grid_columnconfigure(1, weight=1)
         create_frame.grid_columnconfigure(2, weight=1)
 
+
         self.input_entry = Entry(create_frame, textvariable=self.input, font=("Arial", 14))
         self.input_entry.grid(row=0, column=1, pady=5, padx=10, sticky="ew")
+
+        def create_placeholder():
+            self.input_entry.insert(0, "Type your word here...")
+            self.input_entry.config(fg="grey")
+
+        def remove_placeholder(argument):
+            if self.input_entry.get() == "Type your word here...":
+                self.input_entry.delete(0, END)
+                self.input_entry.config(fg="black")
+
+        def add_placeholder(argument):
+            if not self.input_entry.get():
+                self.input_entry.insert(0, "Type your word here...")
+                self.input_entry.config(fg="grey")
+
+        create_placeholder()
+        self.input_entry.bind("<FocusIn>", remove_placeholder)
+        self.input_entry.bind("<FocusOut>", add_placeholder)
 
         self.create_button = Button(create_frame, text="Create card", command=self.refresh_prompt, font=("Arial", 24))
         self.create_button.grid(row=2, column=1, pady=5, padx=10, sticky="ew")
