@@ -94,47 +94,32 @@ class Extractor:
         connect.commit()
         connect.close()
 
-    # def clean_data(self):
-    #     connect = sqlite3.connect("database.db")
-    #     cursor = connect.cursor()
-    #     # cursor.execute('''
-    #     #     DELETE FROM clean_vocabulary
-    #     # ''')
-    #     # connect.commit()
-    #     # cursor.execute("VACUUM")
-    #     # connect.commit()
-    #     cursor.execute('''
-    #         SELECT * FROM (
-    #             SELECT DISTINCT word
-    #             FROM vocabulary
-    #             WHERE date <= ?
-    #         ) AS distinct_words
-    #         JOIN vocabulary ON vocabulary.word = distinct_words.word
-    #         WHERE vocabulary.date <= ?
-    #         ''', (date.today(), date.today()))
-    #     clean_data = cursor.fetchall()
-    #     connect.commit()
-    #     for row in clean_data:
-    #         cursor.execute('''
-    #             INSERT INTO clean_vocabulary (date, word, phonetics, definition, example)
-    #             VALUES (?, ?, ?, ?, ?)
-    #                 ''', row[2:])
-    #     connect.commit()
-    #     connect.close()
-
     def pull_random_card(self):
         connect = sqlite3.connect("database.db")
         cursor = connect.cursor()
-        # self.clean_data()
         cursor.execute('''
             SELECT MAX(id) FROM vocabulary
         ''')
         result = cursor.fetchone()
         max_id = result[0]
-        random_word_id = random.randint(0, max_id)
-        print(random_word_id)
-
-        #code that pulls random card from clean data
-
-        connect.commit()
+        random_word_id = random.randint(1, max_id)
         connect.close()
+        print(random_word_id)
+        return random_word_id
+
+    def make_card(self, card_id):
+        connect = sqlite3.connect("database.db")
+        cursor = connect.cursor()
+        cursor.execute('''
+            SELECT * FROM vocabulary WHERE id = ?
+                ''', (card_id, ))
+        row = cursor.fetchall()
+        word_id = row[0][0]
+        word_date = row[0][1]
+        word_title = row[0][2]
+        word_phonetics = row[0][3]
+        word_definition = row[0][4]
+        word_example = row[0][5]
+        print(word_id, word_date, word_title, word_phonetics, word_definition, word_example)
+
+

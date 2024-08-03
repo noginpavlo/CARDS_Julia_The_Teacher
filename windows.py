@@ -44,7 +44,7 @@ class Window(Tk):
         text_frame = Frame(canvas, bg="white")
         canvas.create_window((0, 0), window=text_frame, anchor="nw")
 
-        text_label = Label(text_frame, text = "Let's start wit this ofr now.", font=("Arial", 14), bg="white", wraplength=550)
+        text_label = Label(text_frame, text="Let's start wit this ofr now.", font=("Arial", 14), bg="white", wraplength=550)
         text_label.pack()
 
         flip_button = Button(learn_frame, text="Flip", font=("Arial", 24))
@@ -75,7 +75,6 @@ class Window(Tk):
         create_frame.grid_columnconfigure(0, weight=1)
         create_frame.grid_columnconfigure(1, weight=1)
         create_frame.grid_columnconfigure(2, weight=1)
-
 
         self.input_entry = Entry(create_frame, textvariable=self.input, font=("Arial", 14))
         self.input_entry.grid(row=0, column=1, pady=5, padx=10, sticky="ew")

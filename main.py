@@ -7,7 +7,8 @@ extractor = Extractor()
 menu = Window()
 menu.mainloop()
 
-extractor.pull_random_card()
+card_number = extractor.pull_random_card()
+extractor.make_card(card_number)
 
 
 
