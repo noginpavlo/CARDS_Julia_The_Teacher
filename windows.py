@@ -11,6 +11,8 @@ class Window(Tk):
         super().__init__()
         self.title("Julia The Teacher")
         self.geometry("300x400")
+        self.card_flip_side = 1
+        self.current_curd = ""
 
         self.menu_frame = Frame()
 
@@ -44,10 +46,20 @@ class Window(Tk):
         text_frame = Frame(canvas, bg="white")
         canvas.create_window((0, 0), window=text_frame, anchor="nw")
 
-        text_label = Label(text_frame, text="Let's start wit this ofr now.", font=("Arial", 14), bg="white", wraplength=550)
+        text_label = Label(text_frame, text="Press 'Flip' to tart learning.", font=("Arial", 16),
+                           bg="white", fg="black", wraplength=380)
         text_label.pack()
 
-        flip_button = Button(learn_frame, text="Flip", font=("Arial", 24))
+        def show_card():
+            if self.card_flip_side == 1:
+                self.current_card = extractor.make_card(extractor.pull_random_card())
+                text_label.config(text=self.current_card[0])
+                self.card_flip_side = 2
+            elif self.card_flip_side == 2:
+                text_label.config(text=self.current_card[1])
+                self.card_flip_side = 1
+
+        flip_button = Button(learn_frame, text="Flip", font=("Arial", 24), command=show_card,)
         flip_button.grid(row=1, column=0, pady=5, sticky="news")
 
         easy_button = Button(learn_frame, text="Easy", bg="lightgreen", font=("Arial", 24))
@@ -83,12 +95,12 @@ class Window(Tk):
             self.input_entry.insert(0, "Type your word here...")
             self.input_entry.config(fg="grey")
 
-        def remove_placeholder(argument):
+        def remove_placeholder(_):
             if self.input_entry.get() == "Type your word here...":
                 self.input_entry.delete(0, END)
                 self.input_entry.config(fg="black")
 
-        def add_placeholder(argument):
+        def add_placeholder(_):
             if not self.input_entry.get():
                 self.input_entry.insert(0, "Type your word here...")
                 self.input_entry.config(fg="grey")

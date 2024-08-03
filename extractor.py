@@ -35,14 +35,16 @@ class Extractor:
             self.response = response.json()
             word = input_word.upper()
             record_date = self.date
-            phonetics = self.response[0]['phonetic']
+            try:
+                phonetics = self.response[0]['phonetic']
+            except KeyError:
+                phonetics = "not found"
             definition = self.response[0]['meanings'][0]['definitions'][0]['definition']
             try:
                 example = self.response[0]['meanings'][0]['definitions'][0]['example']
-                return record_date, word, phonetics, definition, example
             except KeyError:
                 example = "No example found."
-                return record_date, word, phonetics, definition, example
+            return record_date, word, phonetics, definition, example
         else:
             return "Unable to find"
 
@@ -81,7 +83,7 @@ class Extractor:
         connect = sqlite3.connect("database.db")
         cursor = connect.cursor()
         cursor.execute('''
-            CREATE TABLE IF NOT EXISTS clean_vocabulary
+            CREATE TABLE IF NOT EXISTS words_for_today
             (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             date TEXT,
@@ -104,7 +106,6 @@ class Extractor:
         max_id = result[0]
         random_word_id = random.randint(1, max_id)
         connect.close()
-        print(random_word_id)
         return random_word_id
 
     def make_card(self, card_id):
@@ -114,12 +115,34 @@ class Extractor:
             SELECT * FROM vocabulary WHERE id = ?
                 ''', (card_id, ))
         row = cursor.fetchall()
-        word_id = row[0][0]
-        word_date = row[0][1]
+        # word_id = row[0][0]
+        # word_date = row[0][1]
         word_title = row[0][2]
         word_phonetics = row[0][3]
         word_definition = row[0][4]
         word_example = row[0][5]
-        print(word_id, word_date, word_title, word_phonetics, word_definition, word_example)
 
+        def create_front(word):
+            word = word.capitalize()
+            print(word)
+            return word
 
+        def create_back(title, phonetics, definition, example):
+            compose_string = ""
+            compose_string += f"{title.upper()}"
+            if phonetics == "not found":
+                pass
+            else:
+                compose_string += f"\nPhonetics: {phonetics}"
+            compose_string += f"\nDefinition: {definition}"
+            if example == "No example found.":
+                pass
+            else:
+                compose_string += f"\nExample: {example}"
+            print(compose_string)
+            return compose_string
+
+        front = create_front(word_title)
+        back = create_back(word_title, word_phonetics, word_definition, word_example)
+
+        return front, back
