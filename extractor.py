@@ -110,16 +110,17 @@ class Extractor:
         return random_word_id
 
     def make_card(self, card_id):
-        connect = sqlite3.connect("database.db")
-        cursor = connect.cursor()
-        cursor.execute('''
-            SELECT * FROM vocabulary WHERE id = ? AND date <= ?
-                ''', (card_id, date.today()))
-        row = cursor.fetchall()
-        word_title = row[0][2]
-        word_phonetics = row[0][3]
-        word_definition = row[0][4]
-        word_example = row[0][5]
+        with sqlite3.connect("database.db") as connect:
+            cursor = connect.cursor()
+            cursor.execute('''
+                SELECT * FROM vocabulary WHERE id = ? AND date <= ?
+                    ''', (card_id, date.today()))
+            row = cursor.fetchall()
+
+            word_title = row[0][2]
+            word_phonetics = row[0][3]
+            word_definition = row[0][4]
+            word_example = row[0][5]
 
         def create_front(word):
             word = word.capitalize()
