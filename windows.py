@@ -62,13 +62,13 @@ class Window(Tk):
         flip_button = Button(learn_frame, text="Flip", font=("Arial", 24), command=show_card,)
         flip_button.grid(row=1, column=0, pady=5, sticky="news")
 
-        easy_button = Button(learn_frame, text="Easy", bg="lightgreen", font=("Arial", 24))
+        easy_button = Button(learn_frame, text="Easy", bg="lightgreen", font=("Arial", 24), command=show_card)
         easy_button.grid(row=2, column=0, pady=5, sticky="news")
 
-        medium_button = Button(learn_frame, text="Medium", bg="lightyellow", font=("Arial", 24))
+        medium_button = Button(learn_frame, text="Medium", bg="lightyellow", font=("Arial", 24), command=show_card)
         medium_button.grid(row=3, column=0, pady=5, sticky="news")
 
-        hard_button = Button(learn_frame, text="Hard", bg="lightpink", font=("Arial", 24))
+        hard_button = Button(learn_frame, text="Hard", bg="lightpink", font=("Arial", 24), command=show_card)
         hard_button.grid(row=4, column=0, pady=5, sticky="news")
 
         learn_frame.grid()

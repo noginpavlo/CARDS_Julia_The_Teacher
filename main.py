@@ -8,8 +8,3 @@ menu = Window()
 menu.mainloop()
 
 print(extractor.make_card(extractor.pull_random_card()))
-
-
-
-
-

@@ -25,8 +25,6 @@ class Extractor:
             SELECT COUNT (*) FROM vocabulary WHERE word = ?
         ''', (input_word.upper(), ))
         result = cursor.fetchone()
-        print(result)
-        print(result[0])
         connect.commit()
         connect.close()
         if result[0] > 0:
@@ -44,18 +42,19 @@ class Extractor:
                 example = self.response[0]['meanings'][0]['definitions'][0]['example']
             except KeyError:
                 example = "No example found."
-            return record_date, word, phonetics, definition, example
+            increment = 1
+            return record_date, word, phonetics, definition, example, increment
         else:
             return "Unable to find"
 
     def save_word(self, array):
-        if len(array) == 5:
+        if len(array) == 6:
             connection = sqlite3.connect("database.db")
             cursor = connection.cursor()
             cursor.execute('''
-                   INSERT INTO vocabulary (date, word, phonetics, definition, example)
-                   VALUES (?, ?, ?, ?, ?);
-               ''', (array[0], array[1], array[2], array[3], array[4]))
+                   INSERT INTO vocabulary (date, word, phonetics, definition, example, increment)
+                   VALUES (?, ?, ?, ?, ?, ?);
+               ''', (array[0], array[1], array[2], array[3], array[4], array[5]))
             print("successfully saved")
             connection.commit()
             connection.close()
@@ -73,7 +72,8 @@ class Extractor:
             word TEXT,
             phonetics TEXT,
             definition TEXT,
-            example TEXT
+            example TEXT,
+            increment INT
             )
         ''')
         connect.commit()
@@ -97,26 +97,25 @@ class Extractor:
         connect.close()
 
     def pull_random_card(self):
-        connect = sqlite3.connect("database.db")
-        cursor = connect.cursor()
-        cursor.execute('''
-            SELECT MAX(id) FROM vocabulary
-        ''')
-        result = cursor.fetchone()
-        max_id = result[0]
-        random_word_id = random.randint(1, max_id)
-        connect.close()
+        with sqlite3.connect("database.db") as connect:
+            cursor = connect.cursor()
+            cursor.execute('''
+                SELECT MAX(id) FROM vocabulary
+            ''')
+            result = cursor.fetchone()
+            max_id = result[0]
+        random_word_id = 1
+        if max_id >= 1:
+            random_word_id = random.randint(1, max_id)
         return random_word_id
 
     def make_card(self, card_id):
         connect = sqlite3.connect("database.db")
         cursor = connect.cursor()
         cursor.execute('''
-            SELECT * FROM vocabulary WHERE id = ?
-                ''', (card_id, ))
+            SELECT * FROM vocabulary WHERE id = ? AND date <= ?
+                ''', (card_id, date.today()))
         row = cursor.fetchall()
-        # word_id = row[0][0]
-        # word_date = row[0][1]
         word_title = row[0][2]
         word_phonetics = row[0][3]
         word_definition = row[0][4]
